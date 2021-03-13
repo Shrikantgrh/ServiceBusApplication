@@ -1,0 +1,45 @@
+<?xml version = '1.0'?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://ecs.incresearch.com/xsd/v1/Event" targetNamespace="http://ecs.incresearch.com/xsd/v1/Event" elementFormDefault="qualified">
+   <xsd:element name="event">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element name="eventName" type="xsd:string"/>
+            <xsd:element name="eventType" type="xsd:string"/>
+            <xsd:element name="eventDate" type="xsd:string"/>
+            <xsd:element name="source" type="xsd:string"/>
+            <xsd:element name="destination" type="xsd:string"/>
+            <xsd:element name="createdTs" type="xsd:string"/>
+            <xsd:element name="createdBy" type="xsd:string"/>
+            <xsd:element name="eventDetails">
+               <xsd:complexType>
+                  <xsd:sequence>
+                     <xsd:element name="entityType" type="xsd:string"/>
+                     <xsd:element name="lastUpdatedTs" type="xsd:string"/>
+                     <xsd:element name="lastUpdatedBy" type="xsd:string"/>
+                     <xsd:element name="entities">
+                        <xsd:complexType>
+                           <xsd:sequence>
+                              <xsd:element name="entity" maxOccurs="unbounded">
+                                 <xsd:complexType>
+                                    <xsd:simpleContent>
+                                       <xsd:extension base="xsd:string">
+                                          <xsd:attribute name="name" type="xsd:string"/>
+                                       </xsd:extension>
+                                    </xsd:simpleContent>
+                                 </xsd:complexType>
+                              </xsd:element>
+                           </xsd:sequence>
+                        </xsd:complexType>
+                     </xsd:element>
+                  </xsd:sequence>
+               </xsd:complexType>
+            </xsd:element>
+         </xsd:sequence>
+         <xsd:attribute name="id" type="xsd:string"/>
+         <xsd:attribute name="projectCode" type="xsd:string"/>
+         <xsd:attribute name="sequenceNo" type="xsd:integer"/>
+         <xsd:attribute name="systemId" type="xsd:string"/>
+         <xsd:attribute name="transactionId" type="xsd:string"/>
+      </xsd:complexType>
+   </xsd:element>
+</xsd:schema>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:pipelineEntry xmlns:con="http://www.bea.com/wli/sb/pipeline/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con3="http://www.bea.com/wli/sb/stages/config">
+    <con:coreEntry>
+        <con:binding type="SOAP" isSoap12="false" xsi:type="con:SoapBindingType">
+            <con:wsdl ref="DownloadFilePoc/FileDownload"/>
+            <con:binding>
+                <con:name>execute_bind</con:name>
+                <con:namespace>http://xmlns.oracle.com/OSBPoc/DownloadFilePoc/FileDownload</con:namespace>
+            </con:binding>
+        </con:binding>
+        <con:xqConfiguration>
+            <con:snippetVersion>1.0</con:snippetVersion>
+        </con:xqConfiguration>
+    </con:coreEntry>
+    <con:router>
+        <con:pipeline type="request" name="request-a880650.6ca85b9c.0.1778aedc4d9.N7fc2">
+            <con:stage id="_StageId-a880650.6ca85b9c.0.1778aedc4d9.N7fc0" name="Stage1">
+                <con:context/>
+                <con:actions/>
+            </con:stage>
+        </con:pipeline>
+        <con:pipeline type="response" name="response-a880650.6ca85b9c.0.1778aedc4d9.N7fc1">
+            <con:stage id="_StageId-a880650.6ca85b9c.0.1778aedc4d9.N7fbf" name="PublishStage">
+                <con:context/>
+                <con:actions>
+                    <con2:route>
+                        <con3:id>_ActionId-a880650.6ca85b9c.0.1778aedc4d9.N7f6d</con3:id>
+                        <con2:service ref="DownloadFilePoc/BusinessService" xsi:type="ref:BusinessServiceRef" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+                        <con2:outboundTransform>
+                            <con1:transport-headers copy-all="true">
+                                <con3:id>_ActionId-a880650.6ca85b9c.0.1778aedc4d9.N7f67</con3:id>
+                                <con1:header-set>outbound-request</con1:header-set>
+                                <con1:header value="expression" name="fileName">
+                                    <con3:xqueryText>$TestFilenameSubstring</con3:xqueryText>
+                                </con1:header>
+                            </con1:transport-headers>
+                        </con2:outboundTransform>
+                    </con2:route>
+                </con:actions>
+            </con:stage>
+        </con:pipeline>
+        <con:flow>
+            <con:pipeline-node name="PipelinePairNode1">
+                <con:request>request-a880650.6ca85b9c.0.1778aedc4d9.N7fc2</con:request>
+                <con:response>response-a880650.6ca85b9c.0.1778aedc4d9.N7fc1</con:response>
+            </con:pipeline-node>
+            <con:route-node name="RouteNode1" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config">
+                <con:context>
+                    <con2:userNsDecl prefix="functx" namespace="http://www.functx.com"/>
+                    <con2:userNsDecl prefix="fil" namespace="http://xmlns.oracle.com/OSBPoc/DownloadFilePoc/FileDownload"/>
+                </con:context>
+                <con:actions>
+                    <con1:route>
+                        <con2:id>_ActionId-a880650.6ca85b9c.0.1778aedc4d9.N7ffd</con2:id>
+                        <con1:service ref="DownloadFilePoc/FileContentInResponse" xsi:type="ref:BusinessServiceRef" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+                        <con1:outboundTransform>
+                            <con3:routing-options xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config">
+                                <con2:id xmlns:con4="http://www.bea.com/wli/sb/stages/config">_ActionId-a880650.6ca85b9c.0.1778aedc4d9.N7fc3</con2:id>
+                                <con3:uriExpr>
+                                    <con2:xqueryText xmlns:con4="http://www.bea.com/wli/sb/stages/config">$body/fil:string/text()</con2:xqueryText>
+                                </con3:uriExpr>
+                            </con3:routing-options>
+                        </con1:outboundTransform>
+                        <con1:responseTransform>
+                            <con4:assign varName="TestFileName" xmlns:con4="http://www.bea.com/wli/sb/stages/transform/config">
+                                <con2:id>_ActionId-a880650.5bc0b221.0.1779187efcc.N7ffb</con2:id>
+                                <con4:expr>
+                                    <con2:xqueryText>data($outbound/ctx:transport/ctx:response/tp:headers/tp:user-header[@name="Content-Disposition"]/@value)</con2:xqueryText>
+                                </con4:expr>
+                            </con4:assign>
+                            <con4:assign varName="TestFilenameSubstring" xmlns:con4="http://www.bea.com/wli/sb/stages/transform/config">
+                                <con2:id>_ActionId-a880650.N514bcee6.0.1779198504e.N7ffb</con2:id>
+                                <con4:expr>
+                                    <con2:xqueryText>fn:substring-before(fn:substring-after($TestFileName, 'filename="'),'";filename')</con2:xqueryText>
+                                </con4:expr>
+                            </con4:assign>
+                            <con4:assign varName="Content" xmlns:con4="http://www.bea.com/wli/sb/stages/transform/config">
+                                <con2:id>_ActionId-N3f57ff9c.1f72d502.0.1779527a3f5.N7fef</con2:id>
+                                <con4:expr>
+                                    <con2:xqueryText>$body/text()</con2:xqueryText>
+                                </con4:expr>
+                            </con4:assign>
+                        </con1:responseTransform>
+                    </con1:route>
+                </con:actions>
+            </con:route-node>
+        </con:flow>
+        <con:shared-variables>
+            <con:variable>Content</con:variable>
+        </con:shared-variables>
+        <con:partner-links/>
+    </con:router>
+</con:pipelineEntry>

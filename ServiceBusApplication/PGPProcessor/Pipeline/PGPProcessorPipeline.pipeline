@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:pipelineEntry xmlns:con="http://www.bea.com/wli/sb/pipeline/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/stages/logging/config">
+    <con:coreEntry>
+        <con:binding type="SOAP" isSoap12="false" xsi:type="con:SoapBindingType">
+            <con:wsdl ref="PGPProcessor/WSDL/PGPProcessor"/>
+            <con:binding>
+                <con:name>PGPFileProcessor_pttSOAP11Binding</con:name>
+                <con:namespace>http://oracle.com/sca/soapservice/osb/API/PGPFileProcessor</con:namespace>
+            </con:binding>
+        </con:binding>
+        <con:xqConfiguration>
+            <con:snippetVersion>1.0</con:snippetVersion>
+        </con:xqConfiguration>
+    </con:coreEntry>
+    <con:router errorHandler="error-a883874.7dcf1d7d.0.16fd1dca161.N7fca">
+        <con:pipeline name="request-a883874.4e4a4c47.0.16fc2e25658.N7ec0" type="request">
+            <con:stage name="stage1" id="_StageId-a883874.4e4a4c47.0.16fc2e25658.N7ebf">
+                <con:context>
+                    <con1:varNsDecl prefix="pgp" namespace="http://syneoshealth.com/PGPFileProcessor" xmlns:con1="http://www.bea.com/wli/sb/stages/config"/>
+                </con:context>
+                <con:actions>
+                    <con1:javaCallout varName="pgpProcessResponse">
+                        <con2:id>_ActionId-a883874.4e4a4c47.0.16fc2e25658.N7ebc</con2:id>
+                        <con1:archive ref="PGPProcessor/Resources/PGPFileProcessor_JAR"/>
+                        <con1:className>com.syenos.health.pgp.file.processor.EncryptStream</con1:className>
+                        <con1:method>public static java.lang.String encryptFileIntoPGP(java.lang.String, java.lang.String, java.lang.String, java.lang.String)</con1:method>
+                        <con1:expr>
+                            <con2:xqueryText>$body/pgp:PGPFileProcessorRequest/pgp:Encrypt/pgp:InputFilePath/text()</con2:xqueryText>
+                        </con1:expr>
+                        <con1:expr>
+                            <con2:xqueryText>$body/pgp:PGPFileProcessorRequest/pgp:Encrypt/pgp:FileNameWithExtn/text()</con2:xqueryText>
+                        </con1:expr>
+                        <con1:expr>
+                            <con2:xqueryText>$body/pgp:PGPFileProcessorRequest/pgp:Encrypt/pgp:PublicKeyPath/text()</con2:xqueryText>
+                        </con1:expr>
+                        <con1:expr>
+                            <con2:xqueryText>$body/pgp:PGPFileProcessorRequest/pgp:Encrypt/pgp:OutputFilePath/text()</con2:xqueryText>
+                        </con1:expr>
+                        <con1:return-param-as-ref>false</con1:return-param-as-ref>
+                    </con1:javaCallout>
+                    <con3:log>
+                        <con2:id>_ActionId-a883874.4e4a4c47.0.16fc2e25658.N7ebd</con2:id>
+                        <con3:logLevel>info</con3:logLevel>
+                        <con3:expr>
+                            <con2:xqueryText>fn:concat('OPERATION: ',$operation ,' INPUT FILE PATH: ',$body/pgp:PGPFileProcessorRequest/pgp:Encrypt/pgp:InputFilePath,' FILE NAME WITH EXTENSION',$body/pgp:PGPFileProcessorRequest/pgp:Encrypt/pgp:FileNameWithExtn,' PUBLIC KEY PATH : ',$body/pgp:PGPFileProcessorRequest/pgp:Encrypt/pgp:PublicKeyPath,'OUTPUT FILE PATH: ',$body/pgp:PGPFileProcessorRequest/pgp:Encrypt/pgp:OutputFilePath,' RESPONSE: ',$pgpProcessResponse)</con2:xqueryText>
+                        </con3:expr>
+                        <con3:message>PGP INFO LOG</con3:message>
+                    </con3:log>
+                </con:actions>
+            </con:stage>
+        </con:pipeline>
+        <con:pipeline name="response-a883874.4e4a4c47.0.16fc2e25658.N7ebb" type="response">
+            <con:stage name="stage1" id="_StageId-a883874.4e4a4c47.0.16fc2e25658.N7eba">
+                <con:context/>
+                <con:actions>
+                    <con1:replace varName="body" contents-only="true">
+                        <con2:id>_ActionId-a883874.4e4a4c47.0.16fc2e25658.N7eb9</con2:id>
+                        <con1:expr>
+                            <con2:xqueryText><![CDATA[<pgp:PGPFileProcessorResponse 	xmlns:pgp="http://syneoshealth.com/PGPFileProcessor">
+<pgp:STATUS>SUCCESS</pgp:STATUS>
+<pgp:STAUTS_CODE>SYN_OSB_0000</pgp:STAUTS_CODE>
+<pgp:RESPONSEDATA_JSON>{$pgpProcessResponse}</pgp:RESPONSEDATA_JSON>
+</pgp:PGPFileProcessorResponse>]]></con2:xqueryText>
+                        </con1:expr>
+                    </con1:replace>
+                </con:actions>
+            </con:stage>
+        </con:pipeline>
+        <con:pipeline type="request" name="request-a883874.4e4a4c47.0.16fc2e25658.N7e88">
+            <con:stage id="_StageId-a883874.4e4a4c47.0.16fc2e25658.N7e86" name="Stage1">
+                <con:context>
+                    <con2:userNsDecl prefix="pgp" namespace="http://syneoshealth.com/PGPFileProcessor"/>
+                </con:context>
+                <con:actions>
+                    <con1:javaCallout varName="pgpProcessResponse">
+                        <con2:id>_ActionId-a883874.4e4a4c47.0.16fc2e25658.N7e4c</con2:id>
+                        <con1:archive ref="PGPProcessor/Resources/PGPFileProcessor_JAR"/>
+                        <con1:className>com.syenos.health.pgp.file.processor.DecryptStream</con1:className>
+                        <con1:method>public static java.lang.String decryptFileFromPGP(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)</con1:method>
+                        <con1:expr>
+                            <con2:xqueryText>$body/pgp:PGPFileProcessorRequest/pgp:Decrypt/pgp:InputFilePath/text()</con2:xqueryText>
+                        </con1:expr>
+                        <con1:expr>
+                            <con2:xqueryText>$body/pgp:PGPFileProcessorRequest/pgp:Decrypt/pgp:FileNameWithExtn/text()</con2:xqueryText>
+                        </con1:expr>
+                        <con1:expr>
+                            <con2:xqueryText>$body/pgp:PGPFileProcessorRequest/pgp:Decrypt/pgp:PrivateKeyPath/text()</con2:xqueryText>
+                        </con1:expr>
+                        <con1:expr>
+                            <con2:xqueryText>$body/pgp:PGPFileProcessorRequest/pgp:Decrypt/pgp:Passphrase/text()</con2:xqueryText>
+                        </con1:expr>
+                        <con1:expr>
+                            <con2:xqueryText>$body/pgp:PGPFileProcessorRequest/pgp:Decrypt/pgp:OutputFilePath/text()</con2:xqueryText>
+                        </con1:expr>
+                        <con1:return-param-as-ref>false</con1:return-param-as-ref>
+                    </con1:javaCallout>
+                    <con3:log>
+                        <con2:id>_ActionId-a883874.7dcf1d7d.0.16fd1dca161.N7ffe</con2:id>
+                        <con3:logLevel>info</con3:logLevel>
+                        <con3:expr>
+                            <con2:xqueryText>fn:concat('OPERATION: ',$operation ,' INPUT FILE PATH: ',$body/pgp:PGPFileProcessorRequest/pgp:Decrypt/pgp:PrivateKeyPath/text(),'OUTPUT FILE PATH: ',$body/pgp:PGPFileProcessorRequest/pgp:Decrypt/pgp:OutputFilePath,' PASSPHRASE: ',$body/pgp:PGPFileProcessorRequest/pgp:Decrypt/pgp:Passphrase,' RESPONSE: ',$pgpProcessResponse)</con2:xqueryText>
+                        </con3:expr>
+                        <con3:message>PGP INFO LOG</con3:message>
+                    </con3:log>
+                </con:actions>
+            </con:stage>
+        </con:pipeline>
+        <con:pipeline type="response" name="response-a883874.4e4a4c47.0.16fc2e25658.N7e87">
+            <con:stage id="_StageId-a883874.4e4a4c47.0.16fc2e25658.N7e85" name="Stage1">
+                <con:context/>
+                <con:actions>
+                    <con1:replace varName="body" contents-only="true">
+                        <con2:id>_ActionId-a883874.7dcf1d7d.0.16fd1dca161.N7fcb</con2:id>
+                        <con1:expr>
+                            <con2:xqueryText><![CDATA[<pgp:PGPFileProcessorResponse 	xmlns:pgp="http://syneoshealth.com/PGPFileProcessor">
+<pgp:STATUS>SUCCESS</pgp:STATUS>
+<pgp:STAUTS_CODE>SYN_OSB_0000</pgp:STAUTS_CODE>
+<pgp:RESPONSEDATA_JSON>{$pgpProcessResponse}</pgp:RESPONSEDATA_JSON>
+</pgp:PGPFileProcessorResponse>]]></con2:xqueryText>
+                        </con1:expr>
+                    </con1:replace>
+                </con:actions>
+            </con:stage>
+        </con:pipeline>
+        <con:pipeline type="error" name="error-a883874.7dcf1d7d.0.16fd1dca161.N7fca">
+            <con:stage id="_StageId-a883874.7dcf1d7d.0.16fd1dca161.N7fc9" name="Stage1">
+                <con:context/>
+                <con:actions>
+                    <con3:report>
+                        <con2:id>_ActionId-a883874.7dcf1d7d.0.16fd1dca161.N7fc6</con2:id>
+                        <con3:expr>
+                            <con2:xqueryText>$body</con2:xqueryText>
+                        </con3:expr>
+                        <con3:labels>
+                            <con3:key>Request</con3:key>
+                            <con3:varName>body</con3:varName>
+                            <con3:value>
+                                <con2:xpathText>.</con2:xpathText>
+                            </con3:value>
+                        </con3:labels>
+                        <con3:labels>
+                            <con3:key>Operation</con3:key>
+                            <con3:varName>operation</con3:varName>
+                            <con3:value>
+                                <con2:xpathText>.</con2:xpathText>
+                            </con3:value>
+                        </con3:labels>
+                        <con3:labels>
+                            <con3:key>fault</con3:key>
+                            <con3:varName>fault</con3:varName>
+                            <con3:value>
+                                <con2:xpathText>./ctx:errorCode</con2:xpathText>
+                            </con3:value>
+                        </con3:labels>
+                        <con3:labels>
+                            <con3:key>faultdetails</con3:key>
+                            <con3:varName>fault</con3:varName>
+                            <con3:value>
+                                <con2:xpathText>./ctx:details</con2:xpathText>
+                            </con3:value>
+                        </con3:labels>
+                    </con3:report>
+                    <con1:replace varName="body" contents-only="true">
+                        <con2:id>_ActionId-a883874.7dcf1d7d.0.16fd1dca161.N7fbd</con2:id>
+                        <con1:expr>
+                            <con2:xqueryText><![CDATA[<pgp:PGPFileProcessorResponse 	xmlns:pgp="http://syneoshealth.com/PGPFileProcessor">
+<pgp:STATUS>ERROR</pgp:STATUS>
+<pgp:STAUTS_CODE>SYN_OSB_ERR_000</pgp:STAUTS_CODE>
+<pgp:STAUTS_MSG>{concat($fault/ctx:reason,$fault/ctx:details)}</pgp:STAUTS_MSG>
+<pgp:RESPONSEDATA_JSON>{$pgpProcessResponse}</pgp:RESPONSEDATA_JSON>
+</pgp:PGPFileProcessorResponse>]]></con2:xqueryText>
+                        </con1:expr>
+                    </con1:replace>
+                    <con2:reply>
+                        <con2:id>_ActionId-a883874.7dcf1d7d.0.16fd1dca161.N7fc0</con2:id>
+                    </con2:reply>
+                </con:actions>
+            </con:stage>
+        </con:pipeline>
+        <con:flow>
+            <con:branch-node type="operation" id="_FlowId-a883874.4e4a4c47.0.16fc2e25658.N7f99" name="BranchNode1">
+                <con:context/>
+                <con:branch-table>
+                    <con:branch name="encrypt">
+                        <con:operator>equals</con:operator>
+                        <con:value/>
+                        <con:flow>
+                            <con:pipeline-node name="PipelinePairNode1">
+                                <con:request>request-a883874.4e4a4c47.0.16fc2e25658.N7ec0</con:request>
+                                <con:response>response-a883874.4e4a4c47.0.16fc2e25658.N7ebb</con:response>
+                            </con:pipeline-node>
+                        </con:flow>
+                    </con:branch>
+                    <con:branch name="decrypt">
+                        <con:operator>equals</con:operator>
+                        <con:value/>
+                        <con:flow>
+                            <con:pipeline-node name="PipelinePairNode2">
+                                <con:request>request-a883874.4e4a4c47.0.16fc2e25658.N7e88</con:request>
+                                <con:response>response-a883874.4e4a4c47.0.16fc2e25658.N7e87</con:response>
+                            </con:pipeline-node>
+                        </con:flow>
+                    </con:branch>
+                    <con:default-branch>
+                        <con:flow/>
+                    </con:default-branch>
+                </con:branch-table>
+            </con:branch-node>
+        </con:flow>
+    </con:router>
+</con:pipelineEntry>

@@ -1,0 +1,33 @@
+<dvm name="API" xmlns="http://xmlns.oracle.com/dvm">
+  <description/>
+  <columns>
+    <column name="key"/>
+    <column name="value"/>
+  </columns>
+  <rows>
+    <row>
+      <cell>API_AUTHO_URL</cell>
+      <cell>https://apival.incresearch.com/token</cell>
+    </row>
+    <row>
+      <cell>API_CONSUMER_KEY</cell>
+      <cell>nICJo4TIK6bKWk_ayWwz_II7loAa</cell>
+    </row>
+    <row>
+      <cell>API_CCONSUMER_SECRET</cell>
+      <cell>Itsmj2RFFPtQpGxTSjtfPhwYFR8a</cell>
+    </row>
+    <row>
+      <cell>API_USER_NAME</cell>
+      <cell>service-wso2val</cell>
+    </row>
+    <row>
+      <cell>API_PASSWORD</cell>
+      <cell>6UEmyXXBgd</cell>
+    </row>
+    <row>
+      <cell>API_GRANT_TYPE</cell>
+      <cell>client_credentials</cell>
+    </row>
+  </rows>
+</dvm>

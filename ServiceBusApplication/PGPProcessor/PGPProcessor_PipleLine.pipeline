@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:pipelineEntry xmlns:con="http://www.bea.com/wli/sb/pipeline/config" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config">
+    <con:coreEntry>
+        <con:binding type="SOAP" isSoap12="false" xsi:type="con:SoapBindingType" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <con:wsdl ref="PGPProcessor/PGPFileProcessor"/>
+            <con:binding>
+                <con:name>PGPFileProcessor_pttSOAP11Binding</con:name>
+                <con:namespace>http://oracle.com/sca/soapservice/osb/API/PGPFileProcessor</con:namespace>
+            </con:binding>
+        </con:binding>
+        <con:xqConfiguration>
+            <con:snippetVersion>1.0</con:snippetVersion>
+        </con:xqConfiguration>
+    </con:coreEntry>
+    <con:router errorHandler="error-a883874.5b788a54.0.16762e1b2c9.N7fcd">
+        <con:pipeline name="PipelinePairNode1_response" type="response">
+            <con:stage name="stage1">
+                <con:context/>
+                <con:actions>
+                    <con1:replace varName="body" contents-only="true">
+                        <con2:id>_ActionId-a883874.5b788a54.0.16762e1b2c9.N7ffe</con2:id>
+                        <con1:expr>
+                            <con2:xqueryText><![CDATA[<pgp:PGPFileProcessorResponse 	xmlns:pgp="http://syneoshealth.com/PGPFileProcessor">
+<pgp:STATUS>SUCCESS</pgp:STATUS>
+<pgp:STAUTS_CODE>SYN_OSB_0000</pgp:STAUTS_CODE>
+<pgp:RESPONSEDATA_JSON>{$pgpProcessResponse}</pgp:RESPONSEDATA_JSON>
+</pgp:PGPFileProcessorResponse>]]></con2:xqueryText>
+                        </con1:expr>
+                    </con1:replace>
+                </con:actions>
+            </con:stage>
+        </con:pipeline>
+        <con:pipeline name="PipelinePairNode1_request" type="request">
+            <con:stage name="stage1">
+                <con:context>
+                    <con1:varNsDecl prefix="pgp" namespace="http://syneoshealth.com/PGPFileProcessor" xmlns:con1="http://www.bea.com/wli/sb/stages/config"/>
+                </con:context>
+                <con:actions>
+                    <con1:javaCallout varName="pgpProcessResponse">
+                        <con2:id>_ActionId-N7e647583.20f07f55.1.1675e08530a.N8000</con2:id>
+                        <con1:archive ref="PGPProcessor/PGPFileProcessor_JAR"/>
+                        <con1:className>com.syenos.health.pgp.file.processor.EncryptStream</con1:className>
+                        <con1:method>public static java.lang.String encryptFileIntoPGP(java.lang.String, java.lang.String, java.lang.String, java.lang.String)</con1:method>
+                        <con1:expr>
+                            <con:xqueryText xmlns:con="http://www.bea.com/wli/sb/stages/config">$body/pgp:PGPFileProcessorRequest/pgp:fileInputPath/text()</con:xqueryText>
+                        </con1:expr>
+                        <con1:expr>
+                            <con:xqueryText xmlns:con="http://www.bea.com/wli/sb/stages/config">$body/pgp:PGPFileProcessorRequest/pgp:fileNameWithExtension/text()</con:xqueryText>
+                        </con1:expr>
+                        <con1:expr>
+                            <con:xqueryText xmlns:con="http://www.bea.com/wli/sb/stages/config">$body/pgp:PGPFileProcessorRequest/pgp:publigKeyPath/text()</con:xqueryText>
+                        </con1:expr>
+                        <con1:expr>
+                            <con:xqueryText xmlns:con="http://www.bea.com/wli/sb/stages/config">$body/pgp:PGPFileProcessorRequest/pgp:fileOutputPath/text()</con:xqueryText>
+                        </con1:expr>
+                        <con1:return-param-as-ref>false</con1:return-param-as-ref>
+                    </con1:javaCallout>
+                </con:actions>
+            </con:stage>
+        </con:pipeline>
+        <con:pipeline type="error" name="error-a883874.5b788a54.0.16762e1b2c9.N7fcd">
+            <con:stage id="_StageId-a883874.5b788a54.0.16762e1b2c9.N7fcc" name="Stage1">
+                <con:context/>
+                <con:actions>
+                    <con1:replace varName="body" contents-only="true">
+                        <con2:id>_ActionId-a883874.5b788a54.0.16762e1b2c9.N7fc9</con2:id>
+                        <con1:expr>
+                            <con2:xqueryText><![CDATA[<pgp:PGPFileProcessorResponse 	xmlns:pgp="http://syneoshealth.com/PGPFileProcessor">
+<pgp:STATUS>FAILED</pgp:STATUS>
+<pgp:STAUTS_CODE>SYN_OSB_ERR_3541</pgp:STAUTS_CODE>
+<pgp:RESPONSEDATA_JSON>{$fault/ctx:reason/text()}</pgp:RESPONSEDATA_JSON>
+</pgp:PGPFileProcessorResponse>]]></con2:xqueryText>
+                        </con1:expr>
+                    </con1:replace>
+                    <con2:reply>
+                        <con2:id>_ActionId-a883874.5b788a54.0.16762e1b2c9.N7fc6</con2:id>
+                    </con2:reply>
+                </con:actions>
+            </con:stage>
+        </con:pipeline>
+        <con:flow>
+            <con:pipeline-node name="PipelinePairNode1">
+                <con:request>PipelinePairNode1_request</con:request>
+                <con:response>PipelinePairNode1_response</con:response>
+            </con:pipeline-node>
+        </con:flow>
+    </con:router>
+    <aler:alertRules xsi:nil="true" xmlns:aler="http://xmlns.oracle.com/servicebus/monitoring/alert" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+</con:pipelineEntry>
